@@ -31,3 +31,28 @@ def parse_yolo_cfg(path):
     network.append(network_block)
 
     return network
+
+def build_py_modules(network):
+    """
+    Takes a list of modules from a yolo cfg file and builds pytorch modules for them. Since pytorch only has
+    modules for convolution and upsampling, custom modules need to be made for the route, skip, downsampleing layers.
+    """
+    network_info = network[0]
+    module_list = nn.ModuleList()
+    prev_block_filters = 3
+    output_filters = []
+
+    for index, block in enumerate(blocks[1:]):#iterate through blocks, create a module for each block
+        #since blocks have multiple layers, like activation and normalization, use sequential to build modules
+        module = nn.Sequential()
+        if block["type"] == "convolutional":
+            activation = block["activation"]
+            try:#check for batch normalization layer
+                batch_normalize = int(x["batch_normalize"])
+                bias = False
+            except:
+                batch_normalize = 0
+                bias = True
+
+            num_filters = int(block["filters"])
+            
