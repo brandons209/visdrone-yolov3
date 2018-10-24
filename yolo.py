@@ -59,6 +59,78 @@ class YoloNet(nn.Module):
             outputs[i] = input
         return detections
 
+    def load_official_weights(self, weight_path):
+        with open(weight_path, 'rb') as file:
+            #first 160 bytes are 5 int32 variables that contains the header of the file
+            #major version, minor version, subversion images seen by the network
+            header = np.fromfile(file, dtype=np.int32, count=5)
+            self.header = torch.from_numpy(header)
+            self.seen = self.header[3]
+            #rest of the weights are float32
+            raw_weights = np.fromfile(file, dtype=np.float32)
+
+            #variable to keep track of where the code is in the raw_weights array
+            ptr = 0
+            for i in range(len(self.module_list)):
+                module_type = self.blocks[i+1]["type"]
+                #weights are only for convolutional layers, ignore other layers
+                if module_type == "convolutional":
+                    model = self.module_list[i]
+                    #check if block has a batch norm layer
+                    try:
+                        batch_norm = int(self.blocks[i+1]["batch_normalize"])
+                    except:
+                        batch_norm = 0
+
+                    conv_layer = model[0]
+                    #if there is a batch norm layer:
+                    if batch_norm:
+                        batch_norm_layer = model[1]
+                        #number pf weights in batch norm layer:
+                        num_bn_biases = batch_norm_layer.bias.numel()
+                        #load weights:
+                        batch_norm_biases = torch.from_numpy(raw_weights[ptr:ptr+num_bn_biases])
+                        ptr += num_bn_biases
+
+                        batch_norm_weights = torch.from_numpy(raw_weights[ptr:ptr+num_bn_biases])
+                        ptr += num_bn_biases
+
+                        batch_norm_run_mean = torch.from_numpy(raw_weights[ptr:ptr+num_bn_biases])
+                        ptr += num_bn_biases
+
+                        batch_norm_run_var = torch.from_numpy(raw_weights[ptr:ptr+num_bn_biases])
+                        ptr += num_bn_biases
+
+                        #cast loaded weights into dimensions of model weights
+                        batch_norm_biases = batch_norm_biases.view_as(batch_norm_layer.bias.data)
+                        batch_norm_weights = batch_norm_weights.view_as(batch_norm_layer.weight.data)
+                        batch_norm_run_mean = batch_norm_run_mean.view_as(batch_norm_layer.running_mean)
+                        batch_norm_run_var = batch_norm_run_var.view_as(batch_norm_layer.running_var)
+
+                        #copy the data to model
+                        batch_norm_layer.bias.data.copy_(batch_norm_biases)
+                        batch_norm_layer.weight.data.copy_(batch_norm_weights)
+                        batch_norm_layer.running_mean.copy_(batch_norm_run_mean)
+                        batch_norm_layer.running_var.copy_(batch_norm_run_var)
+                    else:#just load conv biases
+                        num_biases = conv_layer.bias.numel()
+                        #load weights
+                        conv_biases = torch.from_numpy(raw_weights[ptr:ptr+num_biases])
+                        ptr += num_biases
+
+                        #reshape loaded weights to dimensions of model weights
+                        conv_biases = conv_biases.view_as(conv_layer.bias.data)
+
+                        #copy data
+                        conv_layer.bias.data.copy_(conv_biases)
+
+                    num_weights = conv_layer.weight.numel()
+                    conv_weights = torch.from_numpy(raw_weights[ptr:ptr+num_weights])
+                    ptr += num_weights
+
+                    conv_weights = conv_weights.view_as(conv_layer.weight.data)
+                    conv_layer.weight.data.copy_(conv_weights)
+
 
 def get_test_input():
     img = cv2.imread("dog-cycle-car.png")
@@ -70,6 +142,7 @@ def get_test_input():
     return img_
 
 model = YoloNet("yolov3.cfg")
+model.load_official_weights("data/yolov3.weights")
 input = get_test_input()
 pred = model(input, torch.cuda.is_available())
 print(pred)

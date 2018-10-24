@@ -76,3 +76,9 @@ def predict_transform(prediction, input_dim, anchors, num_classes, use_CUDA=True
     #resize detections map to size of input image by multiplying by stride
     prediction[:,:,:4] *= stride
     return prediction
+
+#applys objectness score thresholding and non-maximal suppression on predictions to get "true" detections
+def write_true_results(prediction, confidence, num_classes, nms_conf=0.4):#nms_conf is the non-maximal suppression threshold
+    #For each of the bounding box having a objectness score below a threshold, we set the values of it's every attribute (entire row representing the bounding box) to zero.
+    conf_mask = (prediction[:,:,4] > confidence).float().unsqueeze(2)
+    prediction = prediction*conf_mask

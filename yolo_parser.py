@@ -59,7 +59,7 @@ def build_py_modules(network):
         if block["type"] == "convolutional":
             activation = block["activation"]
             try:#check for batch normalization layer
-                batch_normalize = int(x["batch_normalize"])
+                batch_normalize = int(block["batch_normalize"])
                 bias = False
             except:
                 batch_normalize = 0
