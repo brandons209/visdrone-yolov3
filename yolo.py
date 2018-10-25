@@ -1,5 +1,4 @@
 from __future__ import division
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -19,7 +18,7 @@ class YoloNet(nn.Module):
         modules = self.blocks[1:] #exclude the first block, which is a net block that just contains network information
         outputs = {} #cache outputs of each layer for the route and shortcut layers, as they require features maps from previous layers
 
-        write = 0#flag used to indicate whether the first detection occured or not, used to determine whether to concatenate dection maps or not
+        write = False#flag used to indicate whether the first detection occured or not, used to determine whether to concatenate dection maps or not
         for i, module in enumerate(modules):
             module_type = module["type"]
 
@@ -52,7 +51,7 @@ class YoloNet(nn.Module):
                 input = util.predict_transform(input, input_dim, anchors, num_classes, use_CUDA)
                 if not write:#no collecter initalized
                     detections = input
-                    write = 1
+                    write = True
                 else:#concatenate feature maps to collecter
                     detections = torch.cat((detections, input), 1)
 
@@ -131,9 +130,9 @@ class YoloNet(nn.Module):
                     conv_weights = conv_weights.view_as(conv_layer.weight.data)
                     conv_layer.weight.data.copy_(conv_weights)
 
-
+"""
 def get_test_input():
-    img = cv2.imread("dog-cycle-car.png")
+    img = cv2.imread("data/dog-cycle-car.png")
     img = cv2.resize(img, (608,608))          #Resize to the input dimension
     img_ =  img[:,:,::-1].transpose((2,0,1))  # BGR -> RGB | H X W C -> C X H X W
     img_ = img_[np.newaxis,:,:,:]/255.0       #Add a channel at 0 (for batch) | Normalise
@@ -146,3 +145,4 @@ model.load_official_weights("data/yolov3.weights")
 input = get_test_input()
 pred = model(input, torch.cuda.is_available())
 print(pred)
+"""
