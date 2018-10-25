@@ -85,7 +85,7 @@ def unique(tensor):
     unique_np = np.unique(tensor_np)
     unique_tensor = torch.from_numpy(unique_np)
 
-    tensor_res = tesnor.new(unique_tensor.shape)
+    tensor_res = tensor.new(unique_tensor.shape)
     tensor_res.copy_(unique_tensor)
     return tensor_res
 
@@ -219,7 +219,7 @@ def prepare_image(img, input_dim):
     canvas = np.full((input_dim[1], input_dim[0], 3), 128)
     canvas[(height - new_height)//2:(height-new_height)//2 + new_height,(width-new_width)//2:(width-new_width)//2 + new_width,:] = resized_img
 
-    canvas = cv2.resize(img, (input_dim, input_dim))
+    canvas = cv2.resize(img, input_dim)
     canvas = canvas[:,:,::-1].transpose((2,0,1)).copy()
     canvas = torch.from_numpy(canvas).float().div(255.0).unsqueeze(0)
     return canvas
