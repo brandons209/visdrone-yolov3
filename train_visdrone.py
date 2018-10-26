@@ -18,4 +18,5 @@ if torch.cuda.is_available():
     model.cuda()
 
 train_images, train_anno = glob.glob("data/train/images/*"), []
-#check line 154 in detect_objects.py, training annotations need to be conformed to resized image. 
+#check line 154 in detect_objects.py, training annotations need to be conformed to resized image.
+#also may need to remove the last two entries for each line, since its info i dont need.
