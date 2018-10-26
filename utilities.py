@@ -6,6 +6,7 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 import numpy as np
 import cv2
+import glob
 
 """
 The output of YOLO is a convolutional feature map that contains the bounding box attributes along the depth of the feature map. The attributes bounding boxes
@@ -223,3 +224,17 @@ def prepare_image(img, input_dim):
     canvas = canvas[:,:,::-1].transpose((2,0,1)).copy()
     canvas = torch.from_numpy(canvas).float().div(255.0).unsqueeze(0)
     return canvas
+
+def load_annotations(path, input_dim):
+    """
+    takes path to annotations, returns a torch tensor with annotations as floats, bounding boxes resized to input_dim
+    """
+    anno_list = torch.FloatTensor()
+    for anno_file in glob.glob(path+"*"):
+        with open(anno_file, 'r') as f:
+            annos_ = f.read().split('\n')
+            annos = [torch.from_numpy(np.fromstring(line, dtype=np.float32, count=6, sep=',')) for line in annos_]
+            anno_list = torch.cat((anno_list, torch.stack(annos)))
+
+    #TODO: transform bbox boundaries
+    return anno_list

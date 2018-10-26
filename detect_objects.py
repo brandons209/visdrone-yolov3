@@ -175,7 +175,7 @@ with open("data/pallete", 'rb') as f:
 
 #draw bounding boxes with class labels
 draw_time = time.time()
-def draw_bboxes(box, results, color):
+def draw_bboxes(box, results, color):##TODO: draw better bboxes
     c1 = tuple(box[1:3].int())
     c2 = tuple(box[3:5].int())
     img = results[int(box[0])]
