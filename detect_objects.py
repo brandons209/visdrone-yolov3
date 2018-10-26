@@ -37,8 +37,8 @@ def arg_parse():
                         "weightsfile",
                         default = "yolov3.weights", type = str)
     parser.add_argument("--reso", dest = 'reso', help =
-                        "Input resolution of the network. Increase to increase accuracy. Decrease to increase speed",
-                        default = "1080", type = str)
+                        "Input resolution of the network. Increase to increase accuracy. Decrease to increase speed. Enter as 1 dimension.",
+                        default = "608", type = str)
 
     return parser.parse_args()
 
@@ -59,12 +59,11 @@ model = yolo.YoloNet(args.cfgfile)
 model.load_official_weights(args.weightsfile)
 print("Network Initalized Successfully!")
 
-model.network_info["height"] = args.reso
-input_dim = (int(model.network_info["height"]),int(model.network_info["width"]))
+input_dim = (int(args.reso), int(args.reso))
+model.network_info["width"] = input_dim[0]
+model.network_info["height"] = input_dim[1]
 assert input_dim[0] % 32 == 0
 assert input_dim[0] > 32
-assert input_dim[1] % 32 == 0
-assert input_dim[1] > 32
 
 if CUDA:
     model.cuda()
@@ -115,7 +114,8 @@ for i, batch in enumerate(im_batches):
     if CUDA:
         batch = batch.cuda()
 
-    prediction = model(Variable(batch, volatile=True), CUDA)
+    with torch.no_grad():
+        prediction = model(Variable(batch), CUDA)
     prediction = util.write_true_results(prediction, confidence, num_classes, nms_conf = nms_thresh)
     end = time.time()
 
@@ -160,7 +160,7 @@ img_dim_list = torch.index_select(img_dim_list, 0, output[:,0].long())
 scaling_factor = torch.min(input_dim[0]/img_dim_list,1)[0].view(-1,1)
 
 output[:,[1,3]] -= (input_dim[0] - scaling_factor*img_dim_list[:,0].view(-1,1))/2
-output[:,[2,4]] -= (input_dim[0] - scaling_factor*img_dim_list[:,1].view(-1,1))/2
+output[:,[2,4]] -= (input_dim[1] - scaling_factor*img_dim_list[:,1].view(-1,1))/2
 output[:,1:5] /= scaling_factor
 
 #clip bounding boxes with boundaries outside image to edges of image
