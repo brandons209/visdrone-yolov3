@@ -158,9 +158,14 @@ Before we draw the bounding boxes, the predictions contained in our output tenso
 """
 img_dim_list = torch.index_select(img_dim_list, 0, output[:,0].long())
 scaling_factor = torch.min(input_dim[0]/img_dim_list,1)[0].view(-1,1)
-
+#print("img_dim_list: {}, scaling_factor: {}, old bbox: {}".format(img_dim_list, scaling_factor, output[:,[1,3]] ))
 output[:,[1,3]] -= (input_dim[0] - scaling_factor*img_dim_list[:,0].view(-1,1))/2
+#print("new bbox:{}".format(output[:,[1,3]]))
+#print("(input_dim[0] - scaling_factor*img_dim_list[:,0].view(-1,1))/2: {}".format((input_dim[0] - scaling_factor*img_dim_list[:,0].view(-1,1))/2))
+#print("scaling_factor*img_dim_list[:,0].view(-1,1): {}".format(scaling_factor*img_dim_list[:,0].view(-1,1)))
 output[:,[2,4]] -= (input_dim[1] - scaling_factor*img_dim_list[:,1].view(-1,1))/2
+#print("(input_dim[1] - scaling_factor*img_dim_list[:,1].view(-1,1))/2: {}".format((input_dim[1] - scaling_factor*img_dim_list[:,1].view(-1,1))/2))
+#print("output[:,1:5]: {}".format(output[:,1:5]))
 output[:,1:5] /= scaling_factor
 
 #clip bounding boxes with boundaries outside image to edges of image
@@ -181,7 +186,7 @@ def draw_bboxes(box, results, color):##TODO: draw better bboxes
     img = results[int(box[0])]
     class_ = int(box[-1])
     label = "{}".format(classes[class_])
-    cv2.rectangle(img, c1, c2, color, 1)#draw bounding box
+    cv2.rectangle(img, c1, c2, color,thickness=4)#draw bounding box
     text_size = cv2.getTextSize(label, cv2.FONT_HERSHEY_PLAIN, 1, 1)[0]#get text size
     c2 = c1[0] + text_size[0]+3, c1[1] + text_size[1]+4#create area in top left of bounding box to put text
     cv2.rectangle(img, c1, c2, color, -1)#-1 for filled rectangle, at the top left of bounding box
