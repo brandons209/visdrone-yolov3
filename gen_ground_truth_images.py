@@ -5,6 +5,7 @@ import numpy as np
 import glob
 import random
 import pickle
+from tqdm import tqdm
 
 def arg_parse():
     parser = argparse.ArgumentParser(description='Visdrone Ground Truth Generator')
@@ -44,7 +45,7 @@ annos = load_annotations(args.anno)
 images_paths = sorted(glob.glob(args.images+"*"))
 images = [cv2.imread(img) for img in images_paths]
 
-for i, image in enumerate(images):
+for i, image in enumerate(tqdm(images)):
     try:
         image = draw_bboxes(annos[i], image)
     except IndexError:

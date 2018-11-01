@@ -12,6 +12,7 @@ class DetectionLayer(nn.Module):
     def __init__(self, anchors):
         super(DetectionLayer, self).__init__()
         self.anchors = anchors
+
 #defines the EmptyLayer
 class EmptyLayer(nn.Module):
     def __init__(self):

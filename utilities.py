@@ -225,17 +225,17 @@ def prepare_image(img, input_dim):
     canvas = torch.from_numpy(canvas).float().div(255.0).unsqueeze(0)
     return canvas
 
-def load_annotations(path, input_dim, original_img_dim):
+def load_annotations(paths, input_dim, original_img_dim):
     """
     takes path to annotations, returns a list of torch tensors with annotations as floats, bounding boxes resized to input_dim from original dim
     """
     anno_list = []
-    scaling_factor = input_dim[1]/original_img_dim[1]
-    for anno_file in sorted(glob.glob(path+"*")):
+    for i, anno_file in enumerate(paths):
+            scaling_factor = input_dim[1]/original_img_dim[i][1]
             annos = [torch.from_numpy(np.loadtxt(anno_file, dtype=np.int32, delimiter=",", usecols=(0,1,2,3,4,5)))]
             for bbox in annos:
-                bbox[[1,3]] += (input_dim[0] - scaling_factor*original_img_dim[0])/2
-                bbox[[2,4]] += (input_dim[1] - scaling_factor*original_img_dim[1])/2
+                bbox[[1,3]] += (input_dim[0] - scaling_factor*original_img_dim[i][0])/2
+                bbox[[2,4]] += (input_dim[1] - scaling_factor*original_img_dim[i][1])/2
                 bbox[1:5] *= scaling_factor
             anno_list.append(annos)
     return anno_list
