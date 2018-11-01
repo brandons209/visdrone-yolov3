@@ -231,14 +231,11 @@ def load_annotations(path, input_dim, original_img_dim):
     """
     anno_list = []
     scaling_factor = input_dim[1]/original_img_dim[1]
-    for anno_file in glob.glob(path+"*"):
-        with open(anno_file, 'r') as f:
-            annos_ = f.read().split('\n')
-            annos = [torch.from_numpy(np.fromstring(line, dtype=np.float32, count=6, sep=',')) for line in annos_]
+    for anno_file in sorted(glob.glob(path+"*")):
+            annos = [torch.from_numpy(np.loadtxt(anno_file, dtype=np.int32, delimiter=",", usecols=(0,1,2,3,4,5)))]
             for bbox in annos:
                 bbox[[1,3]] += (input_dim[0] - scaling_factor*original_img_dim[0])/2
                 bbox[[2,4]] += (input_dim[1] - scaling_factor*original_img_dim[1])/2
                 bbox[1:5] *= scaling_factor
             anno_list.append(annos)
-
     return anno_list

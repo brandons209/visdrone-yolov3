@@ -180,13 +180,13 @@ with open("data/pallete", 'rb') as f:
 
 #draw bounding boxes with class labels
 draw_time = time.time()
-def draw_bboxes(box, results, color):##TODO: draw better bboxes
+def draw_bboxes(box, results, color):
     c1 = tuple(box[1:3].int())
     c2 = tuple(box[3:5].int())
     img = results[int(box[0])]
     class_ = int(box[-1])
     label = "{}".format(classes[class_])
-    cv2.rectangle(img, c1, c2, color,thickness=4)#draw bounding box
+    cv2.rectangle(img, c1, c2, color,thickness=1)#draw bounding box
     text_size = cv2.getTextSize(label, cv2.FONT_HERSHEY_PLAIN, 1, 1)[0]#get text size
     c2 = c1[0] + text_size[0]+3, c1[1] + text_size[1]+4#create area in top left of bounding box to put text
     cv2.rectangle(img, c1, c2, color, -1)#-1 for filled rectangle, at the top left of bounding box
