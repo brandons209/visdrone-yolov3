@@ -121,7 +121,9 @@ for epoch in range(opt.epochs):
 
     if epoch % opt.checkpoint_interval == 0:
         model.save_weights("%s/%d.weights" % (opt.checkpoint_dir, epoch))
-        current_stats = {"epoch" : epoch, n : model.losses[n] for n in loss_names}
+        current_stats = {"epoch" : epoch}
+        for n in loss_names:
+            current_stats[n] = model.losses[n]
         history.append(current_stats)
 
 with open("{}/history.pkl".format(opt.checkpoint_dir), 'wb') as f:
