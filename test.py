@@ -29,7 +29,6 @@ parser.add_argument("--iou_thres", type=float, default=0.5, help="iou threshold 
 parser.add_argument("--conf_thres", type=float, default=0.5, help="object confidence threshold")
 parser.add_argument("--nms_thres", type=float, default=0.45, help="iou thresshold for non-maximum suppression")
 parser.add_argument("--n_cpu", type=int, default=0, help="number of cpu threads to use during batch generation")
-parser.add_argument("--img_size", type=int, default=416, help="size of each image dimension")
 parser.add_argument("--use_cuda", type=bool, default=True, help="whether to use cuda if available")
 opt = parser.parse_args()
 print(opt)
@@ -42,8 +41,9 @@ test_path = data_config["valid"]
 num_classes = int(data_config["classes"])
 
 # Initiate model
-model = Darknet(opt.model_config_path, opt.img_size)
+model = Darknet(opt.model_config_path)
 model.load_weights(opt.weights_path)
+img_size = hyperparams["height"]
 
 if cuda:
     model = model.cuda()
@@ -51,7 +51,7 @@ if cuda:
 model.eval()
 
 # Get dataloader
-dataset = ListDataset(test_path)
+dataset = ListDataset(test_path, img_size=img_size)
 dataloader = torch.utils.data.DataLoader(dataset, batch_size=opt.batch_size, shuffle=False, num_workers=opt.n_cpu)
 
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
@@ -98,7 +98,7 @@ for batch_i, (_, imgs, targets) in enumerate(tqdm.tqdm(dataloader, desc="Detecti
             annotation_boxes[:, 1] = _annotation_boxes[:, 1] - _annotation_boxes[:, 3] / 2
             annotation_boxes[:, 2] = _annotation_boxes[:, 0] + _annotation_boxes[:, 2] / 2
             annotation_boxes[:, 3] = _annotation_boxes[:, 1] + _annotation_boxes[:, 3] / 2
-            annotation_boxes *= opt.img_size
+            annotation_boxes *= img_size
 
             for label in range(num_classes):
                 all_annotations[-1][label] = annotation_boxes[annotation_labels == label, :]

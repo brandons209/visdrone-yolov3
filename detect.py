@@ -29,7 +29,6 @@ parser.add_argument("--output_folder", type=str, default="data/output", help="pa
 parser.add_argument("--conf_thres", type=float, default=0.5, help="object confidence threshold")
 parser.add_argument("--nms_thres", type=float, default=0.45, help="iou thresshold for non-maximum suppression")
 parser.add_argument("--n_cpu", type=int, default=0, help="number of cpu threads to use during batch generation")
-parser.add_argument("--img_size", type=int, default=608, help="size of each image dimension")
 parser.add_argument("--use_cuda", type=bool, default=True, help="whether to use cuda if available")
 opt = parser.parse_args()
 print(opt)
@@ -43,8 +42,9 @@ num_classes = int(data_config["classes"])
 class_names = load_classes(data_config["names"])
 
 # Initiate model
-model = Darknet(opt.model_config_path, opt.img_size)
+model = Darknet(opt.model_config_path)
 model.load_weights(opt.weights_path)
+img_size = hyperparams["height"]
 print("Network loaded!")
 
 if cuda:
@@ -54,14 +54,14 @@ if cuda:
 model.eval()
 
 # Get dataloader
-dataloader = DataLoader(ImageFolder(opt.image_folder, img_size=opt.img_size),
+dataloader = DataLoader(ImageFolder(opt.image_folder, img_size=img_size),
 batch_size=opt.batch_size, shuffle=False, num_workers=opt.n_cpu)
 
 #define tensor type if using gpu
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
 
-input_dim = int(opt.img_size)
+input_dim = int(img_size)
 assert input_dim % 32 == 0
 assert input_dim > 32
 
@@ -89,11 +89,11 @@ for img_i, (path, detections) in enumerate(zip(tqdm.tqdm(imgs_path, desc="Saving
     img = cv2.imread(path)
 
     # The amount of padding that was added
-    pad_x = max(img.shape[0] - img.shape[1], 0) * (opt.img_size / max(img.shape))
-    pad_y = max(img.shape[1] - img.shape[0], 0) * (opt.img_size / max(img.shape))
+    pad_x = max(img.shape[0] - img.shape[1], 0) * (img_size / max(img.shape))
+    pad_y = max(img.shape[1] - img.shape[0], 0) * (img_size / max(img.shape))
     # Image height and width after padding is removed
-    unpad_h = opt.img_size - pad_y
-    unpad_w = opt.img_size - pad_x
+    unpad_h = img_size - pad_y
+    unpad_w = img_size - pad_x
 
     # Draw bounding boxes and labels of detections
     if detections is not None:
