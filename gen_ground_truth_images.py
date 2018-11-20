@@ -13,6 +13,7 @@ def arg_parse():
     parser.add_argument("--images", dest = 'images', help = "Directory containing images to draw ground truths on.",default = "imgs", type = str)
     parser.add_argument("--anno", dest = 'anno', help = "Directory containing ground truth annotations", default = "det", type = str)
     parser.add_argument("--out", dest = "out", help = "Directory to output images.", default = "data/")
+    parser.add_argument("--batch_size", dest="batch_size", help="batch size for loading images", default=64)
 
     return parser.parse_args()
 ##TODO: add check if path is a single image and single annotation
@@ -43,12 +44,23 @@ def draw_bboxes(boxes, img):
 args = arg_parse()
 annos = load_annotations(args.anno)
 images_paths = sorted(glob.glob(args.images+"*"))
-images = [cv2.imread(img) for img in images_paths]
 
-for i, image in enumerate(tqdm(images)):
+#create batches
+leftover = 0
+batch_size = args.batch_size
+if len(images_paths) % batch_size:
+    leftover = 1
+
+if batch_size != 1:
+    num_batches = len(images_paths) // batch_size + leftover
+    image_batches = [images_paths[i*batch_size : min((i + 1)*batch_size, len(images_paths))] for i in range(num_batches)]
+    annos = [annos[i*batch_size : min((i + 1)*batch_size, len(images_paths))] for i in range(num_batches)]
+
+for image_batch, anno_batch in zip(tqdm(image_batches), annos):
+    batch = [cv2.imread(img) for img in image_batch]
     try:
-        image = draw_bboxes(annos[i], image)
+        for j in range(len(batch)):
+            batch[j] = draw_bboxes(anno_batch[j], batch[j])
+        list(map(cv2.imwrite, [args.out+"truth_{}".format(img.split('/')[-1]) for img in image_batch], batch))
     except IndexError:
         continue
-
-list(map(cv2.imwrite, [args.out+"truth_{}.jpg".format(i) for i in range(len(images))], images))
