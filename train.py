@@ -72,8 +72,8 @@ dataloader = torch.utils.data.DataLoader(
 
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
-optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=learning_rate, momentum=momentum, weight_decay=decay)
-
+#optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()))
+optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), lr=learning_rate, momentum=momentum, weight_decay=decay)
 
 history = [] #history list to store loss stats, each entry will be stats for save-epoch interval
 loss_names = ["x", "y", "w", "h", "conf", "cls", "recall", "precision"]
