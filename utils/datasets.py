@@ -48,7 +48,7 @@ class ListDataset(Dataset):
         self.label_files = [path.replace('images', 'labels').replace('.png', '.txt').replace('.jpg', '.txt') for path in self.img_files]
 
         self.img_shape = (img_size, img_size)
-        self.max_objects = 10000
+        self.max_objects = 300
         #print(self.label_files)
 
     def __getitem__(self, index):
