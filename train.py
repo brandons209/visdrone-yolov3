@@ -54,7 +54,7 @@ decay = float(hyperparams["decay"])
 burn_in = int(hyperparams["burn_in"])
 
 # Initiate model
-model = Darknet(opt.model_config_path)
+model = Darknet(opt.model_config_path, opt.img_size)
 model.apply(weights_init_normal)
 model.load_weights(opt.weights_path)
 

@@ -42,7 +42,7 @@ test_path = data_config["valid"]
 num_classes = int(data_config["classes"])
 
 # Initiate model
-model = Darknet(opt.model_config_path)
+model = Darknet(opt.model_config_path, opt.img_size)
 model.load_weights(opt.weights_path)
 
 if cuda:
