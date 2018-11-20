@@ -26,7 +26,6 @@ parser.add_argument("--batch_size", type=int, default=16, help="size of each ima
 parser.add_argument("--model_config_path", type=str, default="config/yolov3.cfg", help="path to model config file")
 parser.add_argument("--data_config_path", type=str, default="config/coco.data", help="path to data config file")
 parser.add_argument("--weights_path", type=str, default="weights/yolov3.weights", help="path to weights file")
-parser.add_argument("--class_path", type=str, default="data/coco.names", help="path to class label file")
 parser.add_argument("--conf_thres", type=float, default=0.8, help="object confidence threshold")
 parser.add_argument("--nms_thres", type=float, default=0.4, help="iou thresshold for non-maximum suppression")
 parser.add_argument("--n_cpu", type=int, default=0, help="number of cpu threads to use during batch generation")
@@ -43,8 +42,6 @@ cuda = torch.cuda.is_available() and opt.use_cuda
 
 os.makedirs("output", exist_ok=True)
 os.makedirs("checkpoints", exist_ok=True)
-
-classes = load_classes(opt.class_path)
 
 # Get data configuration
 data_config = parse_data_config(opt.data_config_path)
