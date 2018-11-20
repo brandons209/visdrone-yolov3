@@ -39,8 +39,7 @@ print(opt)
 
 cuda = torch.cuda.is_available() and opt.use_cuda
 
-os.makedirs("output", exist_ok=True)
-os.makedirs("checkpoints", exist_ok=True)
+os.makedirs("data/saved_weights", exist_ok=True)
 
 # Get data configuration
 data_config = parse_data_config(opt.data_config_path)
