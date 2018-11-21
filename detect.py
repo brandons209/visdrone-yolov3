@@ -44,7 +44,7 @@ class_names = load_classes(data_config["names"])
 # Initiate model
 model = Darknet(opt.model_config_path)
 model.load_weights(opt.weights_path)
-img_size = hyperparams["height"]
+img_size = int(hyperparams["height"])
 assert img_size % 32 == 0
 assert img_size > 32
 print("Network loaded!")

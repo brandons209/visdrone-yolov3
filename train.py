@@ -47,7 +47,7 @@ hyperparams = parse_model_config(opt.model_config_path)[0]
 learning_rate = float(hyperparams["learning_rate"])
 momentum = float(hyperparams["momentum"])
 decay = float(hyperparams["decay"])
-img_size = hyperparams["height"]
+img_size = int(hyperparams["height"])
 #burn_in = int(hyperparams["burn_in"])
 
 # Initiate model

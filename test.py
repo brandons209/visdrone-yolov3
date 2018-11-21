@@ -37,13 +37,14 @@ cuda = torch.cuda.is_available() and opt.use_cuda
 
 # Get data configuration
 data_config = parse_data_config(opt.data_config_path)
+hyperparams = parse_model_config(opt.model_config_path)[0]
 test_path = data_config["valid"]
 num_classes = int(data_config["classes"])
 
 # Initiate model
 model = Darknet(opt.model_config_path)
 model.load_weights(opt.weights_path)
-img_size = hyperparams["height"]
+img_size = int(hyperparams["height"])
 
 if cuda:
     model = model.cuda()
@@ -64,7 +65,7 @@ all_annotations = []
 for batch_i, (_, imgs, targets) in enumerate(tqdm.tqdm(dataloader, desc="Detecting objects")):
 
     imgs = Variable(imgs.type(Tensor))
-    print(targets.shape)
+    #print(targets.shape)
     with torch.no_grad():
         outputs = model(imgs)
         outputs = non_max_suppression(outputs, num_classes, conf_thres=opt.conf_thres, nms_thres=opt.nms_thres)
