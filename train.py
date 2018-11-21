@@ -29,9 +29,7 @@ parser.add_argument("--conf_thres", type=float, default=0.8, help="object confid
 parser.add_argument("--nms_thres", type=float, default=0.4, help="iou thresshold for non-maximum suppression")
 parser.add_argument("--n_cpu", type=int, default=0, help="number of cpu threads to use during batch generation")
 parser.add_argument("--checkpoint_interval", type=int, default=1, help="interval between saving model weights")
-parser.add_argument(
-    "--checkpoint_dir", type=str, default="checkpoints", help="directory where model checkpoints are saved"
-)
+parser.add_argument("--checkpoint_dir", type=str, default="checkpoints", help="directory where model checkpoints are saved")
 parser.add_argument("--use_cuda", type=bool, default=True, help="whether to use cuda if available")
 opt = parser.parse_args()
 print(opt)
@@ -49,13 +47,14 @@ hyperparams = parse_model_config(opt.model_config_path)[0]
 learning_rate = float(hyperparams["learning_rate"])
 momentum = float(hyperparams["momentum"])
 decay = float(hyperparams["decay"])
+img_size = hyperparams["height"]
 #burn_in = int(hyperparams["burn_in"])
 
 # Initiate model
 model = Darknet(opt.model_config_path)
 model.apply(weights_init_normal)
 model.load_weights(opt.weights_path)
-img_size = hyperparams["height"]
+
 
 if cuda:
     model = model.cuda()

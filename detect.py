@@ -45,6 +45,8 @@ class_names = load_classes(data_config["names"])
 model = Darknet(opt.model_config_path)
 model.load_weights(opt.weights_path)
 img_size = hyperparams["height"]
+assert img_size % 32 == 0
+assert img_size > 32
 print("Network loaded!")
 
 if cuda:
@@ -59,11 +61,6 @@ batch_size=opt.batch_size, shuffle=False, num_workers=opt.n_cpu)
 
 #define tensor type if using gpu
 Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
-
-
-input_dim = int(img_size)
-assert input_dim % 32 == 0
-assert input_dim > 32
 
 imgs_path = [] #Stores image paths
 img_detections = [] #Stores detections for each image index
