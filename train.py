@@ -80,6 +80,9 @@ for epoch in range(opt.epochs):
     elif epoch >= 100:
         learning_rate = 1e-5
 
+    for g in optimizer.param_groups:
+        g['lr'] = learning_rate
+
     for batch_i, (_, imgs, targets) in enumerate(dataloader):
         imgs = Variable(imgs.type(Tensor))
         targets = Variable(targets.type(Tensor), requires_grad=False)
