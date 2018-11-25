@@ -311,11 +311,14 @@ class Darknet(nn.Module):
                     except RuntimeError:
                         print("RuntimeError in models 295")
                 else:
-                    # Load conv. bias
-                    num_b = conv_layer.bias.numel()
-                    conv_b = torch.from_numpy(weights[ptr : ptr + num_b]).view_as(conv_layer.bias)
-                    conv_layer.bias.data.copy_(conv_b)
-                    ptr += num_b
+                    try:
+                        # Load conv. bias
+                        num_b = conv_layer.bias.numel()
+                        conv_b = torch.from_numpy(weights[ptr : ptr + num_b]).view_as(conv_layer.bias)
+                        conv_layer.bias.data.copy_(conv_b)
+                        ptr += num_b
+                    except RuntimeError:
+                        print("RuntimeError in models 316")
                 # Load conv. weights
                 try:
                     num_w = conv_layer.weight.numel()
