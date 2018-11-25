@@ -288,25 +288,28 @@ class Darknet(nn.Module):
             if module_def["type"] == "convolutional":
                 conv_layer = module[0]
                 if module_def["batch_normalize"]:
-                    # Load BN bias, weights, running mean and running variance
-                    bn_layer = module[1]
-                    num_b = bn_layer.bias.numel()  # Number of biases
-                    # Bias
-                    bn_b = torch.from_numpy(weights[ptr : ptr + num_b]).view_as(bn_layer.bias)
-                    bn_layer.bias.data.copy_(bn_b)
-                    ptr += num_b
-                    # Weight
-                    bn_w = torch.from_numpy(weights[ptr : ptr + num_b]).view_as(bn_layer.weight)
-                    bn_layer.weight.data.copy_(bn_w)
-                    ptr += num_b
-                    # Running Mean
-                    bn_rm = torch.from_numpy(weights[ptr : ptr + num_b]).view_as(bn_layer.running_mean)
-                    bn_layer.running_mean.data.copy_(bn_rm)
-                    ptr += num_b
-                    # Running Var
-                    bn_rv = torch.from_numpy(weights[ptr : ptr + num_b]).view_as(bn_layer.running_var)
-                    bn_layer.running_var.data.copy_(bn_rv)
-                    ptr += num_b
+                    try:
+                        # Load BN bias, weights, running mean and running variance
+                        bn_layer = module[1]
+                        num_b = bn_layer.bias.numel()  # Number of biases
+                        # Bias
+                        bn_b = torch.from_numpy(weights[ptr : ptr + num_b]).view_as(bn_layer.bias)
+                        bn_layer.bias.data.copy_(bn_b)
+                        ptr += num_b
+                        # Weight
+                        bn_w = torch.from_numpy(weights[ptr : ptr + num_b]).view_as(bn_layer.weight)
+                        bn_layer.weight.data.copy_(bn_w)
+                        ptr += num_b
+                        # Running Mean
+                        bn_rm = torch.from_numpy(weights[ptr : ptr + num_b]).view_as(bn_layer.running_mean)
+                        bn_layer.running_mean.data.copy_(bn_rm)
+                        ptr += num_b
+                        # Running Var
+                        bn_rv = torch.from_numpy(weights[ptr : ptr + num_b]).view_as(bn_layer.running_var)
+                        bn_layer.running_var.data.copy_(bn_rv)
+                        ptr += num_b
+                    except RuntimeError:
+                        print("RuntimeError in models 295")
                 else:
                     # Load conv. bias
                     num_b = conv_layer.bias.numel()

@@ -38,6 +38,7 @@ cuda = torch.cuda.is_available() and opt.use_cuda
 # Get data configuration
 print("Loading network...")
 data_config = parse_data_config(opt.data_config_path)
+hyperparams = parse_model_config(opt.model_config_path)[0]
 num_classes = int(data_config["classes"])
 class_names = load_classes(data_config["names"])
 
