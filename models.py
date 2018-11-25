@@ -317,10 +317,13 @@ class Darknet(nn.Module):
                     conv_layer.bias.data.copy_(conv_b)
                     ptr += num_b
                 # Load conv. weights
-                num_w = conv_layer.weight.numel()
-                conv_w = torch.from_numpy(weights[ptr : ptr + num_w]).view_as(conv_layer.weight)
-                conv_layer.weight.data.copy_(conv_w)
-                ptr += num_w
+                try:
+                    num_w = conv_layer.weight.numel()
+                    conv_w = torch.from_numpy(weights[ptr : ptr + num_w]).view_as(conv_layer.weight)
+                    conv_layer.weight.data.copy_(conv_w)
+                    ptr += num_w
+                except RuntimeError:
+                    print("RuntimeError in models 321")
 
     """
         @:param path    - path of the new weights file
