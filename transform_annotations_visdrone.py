@@ -18,8 +18,8 @@ train_images = [cv2.imread(img) for img in tqdm(train_images_paths)]
 valid_images = [cv2.imread(img) for img in tqdm(valid_images_paths)]
 
 #create lists of dimensions for each image
-train_img_dim_list = [(inp.shape[1], inp.shape[0]) for inp in train_images]
-valid_img_dim_list = [(inp.shape[1], inp.shape[0]) for inp in valid_images]
+train_img_dim_list = [(inp.shape[1], inp.shape[0]) for inp in tqdm(train_images)]
+valid_img_dim_list = [(inp.shape[1], inp.shape[0]) for inp in tqdm(valid_images)]
 
 train_annos_paths = sorted(glob.glob("data/train/*.txt"))
 valid_annos_paths = sorted(glob.glob("data/valid/*.txt"))
