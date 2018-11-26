@@ -35,8 +35,8 @@ for i in tqdm(range(len(train_annos))):
           tmp = np.insert(tmp, 0, tmp[-1])
           tmp = np.delete(tmp, -1)
           train_annos[i][j] = tmp
-          train_annos[i][j][1] = (train_annos[i][j][1] + train_annos[i][j][3]) / 2 #transform top left x,y to center x,y
-          train_annos[i][j][2] = (train_annos[i][j][2] + train_annos[i][j][4]) / 2
+          train_annos[i][j][1] = train_annos[i][j][1] + train_annos[i][j][3]/2 #transform top left x,y to center x,y
+          train_annos[i][j][2] = train_annos[i][j][2] + train_annos[i][j][4]/2
           train_annos[i][j][1] /= train_img_dim_list[i][0]
           train_annos[i][j][2] /= train_img_dim_list[i][1]
           train_annos[i][j][3] /= train_img_dim_list[i][0]
@@ -51,8 +51,8 @@ for i in tqdm(range(len(valid_annos))):
             tmp = np.insert(tmp, 0, tmp[-1])
             tmp = np.delete(tmp, -1)
             valid_annos[i][j] = tmp
-            valid_annos[i][j][1] = (valid_annos[i][j][1] + valid_annos[i][j][3]) / 2
-            valid_annos[i][j][2] = (valid_annos[i][j][2] + valid_annos[i][j][4]) / 2
+            valid_annos[i][j][1] = valid_annos[i][j][1] + valid_annos[i][j][3]/2
+            valid_annos[i][j][2] = valid_annos[i][j][2] + valid_annos[i][j][4]/2
             valid_annos[i][j][1] /= valid_img_dim_list[i][0]
             valid_annos[i][j][2] /= valid_img_dim_list[i][1]
             valid_annos[i][j][3] /= valid_img_dim_list[i][0]
