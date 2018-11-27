@@ -3,7 +3,7 @@ import glob
 import cv2
 import os
 from tqdm import tqdm
-
+## TODO: add description to tqdms
 def load_annotations(path):
     anno_list = []
     for anno_file in path:
