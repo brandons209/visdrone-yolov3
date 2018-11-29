@@ -3,7 +3,7 @@ import glob
 import cv2
 import os
 from tqdm import tqdm
-## TODO: add description to tqdms
+
 def load_annotations(path):
     anno_list = []
     for anno_file in path:
@@ -14,12 +14,12 @@ train_images_paths = sorted(glob.glob("data/train/*.jpg"))
 valid_images_paths = sorted(glob.glob("data/valid/*.jpg"))
 
 #load images
-train_images = [cv2.imread(img) for img in tqdm(train_images_paths)]
-valid_images = [cv2.imread(img) for img in tqdm(valid_images_paths)]
+train_images = [cv2.imread(img) for img in tqdm(train_images_paths, desc="Loading training images")]
+valid_images = [cv2.imread(img) for img in tqdm(valid_images_paths, desc="Loading valid images")]
 
 #create lists of dimensions for each image
-train_img_dim_list = [(inp.shape[1], inp.shape[0]) for inp in tqdm(train_images)]
-valid_img_dim_list = [(inp.shape[1], inp.shape[0]) for inp in tqdm(valid_images)]
+train_img_dim_list = [(inp.shape[1], inp.shape[0]) for inp in tqdm(train_images, desc="Getting train image sizes")]
+valid_img_dim_list = [(inp.shape[1], inp.shape[0]) for inp in tqdm(valid_images, desc="Getting valid image sizes")]
 
 train_annos_paths = sorted(glob.glob("data/train/*.txt"))
 valid_annos_paths = sorted(glob.glob("data/valid/*.txt"))
@@ -28,7 +28,7 @@ train_annos = load_annotations(train_annos_paths)
 valid_annos = load_annotations(valid_annos_paths)
 
 #move class annotation to beginning of each annotation, chang the top x,y coord to x,y of center of box, scale bbox coordinates to between 0 and 1 based on dimensions of image
-for i in tqdm(range(len(train_annos))):
+for i in tqdm(range(len(train_annos)), desc="Converting train annotations"):
     for j in range(len(train_annos[i])):
         try:
           tmp = train_annos[i][j]
@@ -44,7 +44,7 @@ for i in tqdm(range(len(train_annos))):
         except:
           continue
 
-for i in tqdm(range(len(valid_annos))):
+for i in tqdm(range(len(valid_annos)), desc="Converting valid annotations"):
     for j in range(len(valid_annos[i])):
         try:
             tmp = valid_annos[i][j]
