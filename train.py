@@ -121,6 +121,8 @@ for epoch in range(opt.epochs):
         for n in loss_names:
             current_stats[n] = model.losses[n]
         history.append(current_stats)
+        with open("{}/history.pkl".format(opt.checkpoint_dir), 'wb') as f:
+            pickle.dump(history, f)
 
 with open("{}/history.pkl".format(opt.checkpoint_dir), 'wb') as f:
     pickle.dump(history, f)
