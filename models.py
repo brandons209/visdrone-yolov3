@@ -309,7 +309,7 @@ class Darknet(nn.Module):
                         bn_layer.running_var.data.copy_(bn_rv)
                         ptr += num_b
                     except RuntimeError:
-                        print("extra weight in batch_normalize")
+                        print("warning: extra weight in batch_normalize")
                 else:
                     try:
                         # Load conv. bias
@@ -318,7 +318,7 @@ class Darknet(nn.Module):
                         conv_layer.bias.data.copy_(conv_b)
                         ptr += num_b
                     except RuntimeError:
-                        print("extra weight in batch_normalize")
+                        print("warning: extra weight in batch_normalize")
                 # Load conv. weights
                 try:
                     num_w = conv_layer.weight.numel()
@@ -326,7 +326,7 @@ class Darknet(nn.Module):
                     conv_layer.weight.data.copy_(conv_w)
                     ptr += num_w
                 except RuntimeError:
-                    print("extra weight in conv layer")
+                    print("warning: extra weight in conv layer")
 
     """
         @:param path    - path of the new weights file

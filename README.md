@@ -1,2 +1,2 @@
-# visdrone-yolov3
-Visdrone DET dataset with YOLOv3
+#VisDrone DET Objects in Images with YoloV3
+[LICENSE](LICENSE)
