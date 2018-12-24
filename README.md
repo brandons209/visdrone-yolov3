@@ -1,4 +1,4 @@
-#VisDrone DET Objects in Images with YoloV3    
+# VisDrone DET Objects in Images with YoloV3    
 [LICENSE](LICENSE)
 
 A research project I was assigned by UCF's [CRCV](http://crcv.ucf.edu/) (Center for Research in Computer Vision). The goal is to detect objects in images taken from a UAV. Objects are usually small and there are many objects in one image. Objects can be cars, pedestrians, vans, trucks, tricycles, motorcycles, awning-tricycles, and a few others. Check out the VisDrone challenge [here](http://www.aiskyeye.com/).
